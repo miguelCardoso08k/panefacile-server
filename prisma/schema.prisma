@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+enum PaymentType {
+  PIX
+  MONEY
+  PRODUCT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Address {
+  id           String @id @default(cuid())
+  street       String
+  neighborhood String
+  number       String
+  cep          String
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  addressId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Record {
+  id         String   @id @default(cuid())
+  customerId String   @unique
+  balance    Float
+  updatedAt  DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  cod             Int
+  number          Int
+  products        String
+  customerId      String
+  value           Float
+  discountPercent Float
+  discountValue   Float
+  deliveryStatus  String
+  paymentStatus   String
+  recordId        String
+  createdAt       DateTime @default(now())
+  createdFor      String
+  updatedAt       DateTime @updatedAt()
+  updatedFor      String
+  deliveredAt     DateTime
+}
+
+model Payment {
+  id        String      @id @default(cuid())
+  value     Float
+  type      PaymentType
+  createdAt DateTime    @default(now())
+}
+
+model Product {
+  id     String @id @default(cuid())
+  name   String
+  imgUrl String
+  cost   Float
+  value  Float
+  stock  Int
+}
+
+model StockMovement {
+  id          String       @id @default(cuid())
+  productId   String
+  type        MovementType
+  quantity    Int
+  description String
+}
